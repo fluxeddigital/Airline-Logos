@@ -1,4 +1,4 @@
-## AirlineLogoScraper
+## Airline Logos
 
 **AirlineLogoScraper** is a script that iterates through all three-character alphanumeric codes and attempts to download the corresponding airline logo from [FlightAware](http://flightaware.com). 
 
@@ -8,11 +8,11 @@ For example, Delta Airlines has the ICAO code **DAL**. The script downloads the 
 
 ### Running AirlineLogoScraper
 
-Download the `AirlineLogoScraper` executable and double-click on it (or run it through terminal with `$ ./AirlineLogoScraper`). It will create dump all downloaded logos into `~/Documents/Airline Logos`.
+Download the `AirlineLogoScraper` executable and double-click on it (or run it through terminal with `$ ./AirlineLogoScraper`). It will create the logos into `~/Documents/Airline Logos`.
 
-## Airline Logos
+### All Logos
 
-As of 4 Oct 2017, the script yields 150 distinct logos. The results are dumped 
+As of 4 Oct 2017, the script yields 150 distinct logos.
 
 | ICAO code | image               |
 | ------- | --------------------- |
