@@ -22,13 +22,43 @@ let numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 let characters = letters + numbers
 
-func downloadLogo(_ icaoCode: String) {
+enum AirlineCode {
+    /// Three-letter ICAO code
+    case icao(String)
+    
+    // Two-letter IATA code
+    case iata(String)
+    
+    var downloadUrl: URL? {
+        switch self {
+        case .icao(let icaoCode):
+            return URL(string: "https://flightaware.com/images/airline_logos/90p/\(icaoCode).png")
+        case .iata(let iataCode):
+            return URL(string: "https://a1.r9cdn.net/rimg/provider-logos/airlines/v/\(iataCode).png?crop=false&width=300&height=300")
+        }
+    }
+    
+    var stringValue: String {
+        switch self {
+        case .icao(let icaoCode):
+            return icaoCode
+        case .iata(let iataCode):
+            return iataCode
+        }
+    }
+}
+
+func downloadLogo(for code: AirlineCode) {
     let semaphore = DispatchSemaphore(value: 0)
     
-    let logoFetchUrl = URL(string: "https://flightaware.com/images/airline_logos/90p/\(icaoCode).png")!
-    let logoFileUrl = airlineLogosFolder.appendingPathComponent("/\(icaoCode).png")
+    guard let fetchUrl = code.downloadUrl else {
+        print("nothing for \(code.stringValue)")
+        return
+    }
     
-    URLSession.shared.dataTask(with: logoFetchUrl, completionHandler: { (data, _, _) -> Void in
+    let logoFileUrl = airlineLogosFolder.appendingPathComponent("/\(code.stringValue).png")
+    
+    URLSession.shared.dataTask(with: fetchUrl, completionHandler: { (data, _, _) -> Void in
         defer {
             semaphore.signal()
         }
@@ -36,11 +66,11 @@ func downloadLogo(_ icaoCode: String) {
         guard let data = data,
             NSImage(data: data) != nil else
         {
-            print("nothing for \(icaoCode)")
+            print("nothing for \(code.stringValue)")
             return
         }
         
-        print("downloaded \(icaoCode)")
+        print("downloaded \(code.stringValue)")
         try? data.write(to: logoFileUrl, options: [])
     }).resume()
     
@@ -48,11 +78,10 @@ func downloadLogo(_ icaoCode: String) {
 }
 
 for firstLetter in characters {
-    downloadLogo("\(firstLetter)")
     for secondLetter in characters {
-        downloadLogo("\(firstLetter)\(secondLetter)")
+        downloadLogo(for: .iata("\(firstLetter)\(secondLetter)"))
         for thirdLetter in characters {
-            downloadLogo("\(firstLetter)\(secondLetter)\(thirdLetter)")
+            downloadLogo(for: .icao("\(firstLetter)\(secondLetter)\(thirdLetter)"))
         }
     }
 }
